@@ -65,7 +65,7 @@
   }
   .font-ctrl span { font-size: 0.72rem; color: #a08060; letter-spacing: 0.05em; }
   .font-btn {
-    width: 30px; height: 30px;
+    padding: 0.25rem 0.6rem;
     border: 1px solid #5a4a32;
     border-radius: 4px;
     background: transparent;
@@ -74,10 +74,13 @@
     font-family: 'Noto Serif JP', serif;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.15s;
+    white-space: nowrap;
   }
   .font-btn:hover { background: #3a2a18; color: #f0d8b0; }
-  .font-btn.small { font-size: 11px; }
-  .font-btn.large { font-size: 17px; }
+  .font-btn.active-size { background: #5a2020; color: #f0d0a0; border-color: #8a4040; }
+  .font-btn.s { font-size: 11px; }
+  .font-btn.m { font-size: 14px; }
+  .font-btn.l { font-size: 18px; }
   .container { max-width: 1040px; margin: 0 auto; padding: 1.5rem 1rem; }
   .search-area {
     background: var(--paper);
@@ -346,9 +349,10 @@
   <h1>📚 名作文学館</h1>
   <p>7,593作品 収録 ／ カテゴリー・著者・作品名で検索</p>
   <div class="font-ctrl">
-    <span>文字サイズ</span>
-    <button class="font-btn small" onclick="changeFont(-1)" title="文字を小さく">あ</button>
-    <button class="font-btn large" onclick="changeFont(1)" title="文字を大きく">あ</button>
+    <span>文字</span>
+    <button class="font-btn s" id="fsSmall" onclick="setFont(13)" title="小">小</button>
+    <button class="font-btn m active-size" id="fsMid" onclick="setFont(16)" title="中">中</button>
+    <button class="font-btn l" id="fsLarge" onclick="setFont(20)" title="大">大</button>
   </div>
 </header>
 
@@ -448,10 +452,13 @@ let currentCategory = '';
 let fontSize = 15;
 let currentUtterance = null;
 
-// ===== 文字サイズ =====
-function changeFont(delta) {
-  fontSize = Math.min(20, Math.max(12, fontSize + delta));
-  document.documentElement.style.setProperty('--font-size', fontSize + 'px');
+// ===== 文字サイズ（小13px・中16px・大20px）=====
+function setFont(size) {
+  document.documentElement.style.setProperty('--font-size', size + 'px');
+  document.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active-size'));
+  if (size===13) document.getElementById('fsSmall').classList.add('active-size');
+  else if (size===16) document.getElementById('fsMid').classList.add('active-size');
+  else document.getElementById('fsLarge').classList.add('active-size');
 }
 
 // ===== 音声読み上げ =====
