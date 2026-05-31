@@ -1,1 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名作文学館 - 7,593作品</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+JP:wght@400;500&display=swap');
 
+  :root {
+    --bg: #fdf8f0;
+    --paper: #fffef9;
+    --ink: #1a1208;
+    --ink-light: #5a4a32;
+    --accent: #8b1a1a;
+    --accent2: #2c5f8a;
+    --border: #d4c4a0;
+    --shadow: rgba(100,70,30,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+    border-bottom: 4px solid var(--accent);
+  }
+
+  header h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    letter-spacing: 0.2em;
+    margin-bottom: 0.3rem;
+  }
+
+  header p {
+    font-size: 0.9rem;
+    color: #c8b89a;
+    letter-spacing: 0.1em;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+  }
+
+  /* 検索エリア */
+  .search-area {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 180px;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    background: var(--bg);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus {
+    border-color: var(--accent2);
+  }
+
+  .search-input::placeholder { color: #b0a080; }
+
+  /* カテゴリーボタン */
+  .category-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .cat-btn {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--bg);
+    color: var(--ink-light);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .cat-btn:hover { background: var(--border); }
+
+  .cat-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .cat-btn.active-blue {
+    background: var(--accent2);
+    color: white;
+    border-color: var(--accent2);
+  }
+
+  /* 結果件数 */
+  .result-count {
+    font-size: 0.85rem;
+    color: var(--ink-light);
+    margin-bottom: 0.8rem;
+    padding-left: 0.2rem;
+  }
+
+  /* テーブル */
+  .table-wrap {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  thead {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  thead th {
+    padding: 0.7rem 1rem;
+    text-align: left;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f5ede0; }
+
+  tbody td {
+    padding: 0.6rem 1rem;
+    vertical-align: middle;
+  }
+
+  .td-title { font-family: 'Noto Serif JP', serif; color: var(--ink); }
+  .td-author { color: var(--ink-light); font-size: 0.85rem; }
+
+  .cat-tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .tag-外国文学 { background: #e8f0fb; color: #1a4a8a; }
+  .tag-外国思想社会科学 { background: #e8f5e8; color: #1a6a2a; }
+  .tag-日本古典 { background: #fdf0e0; color: #8a4a10; }
+  .tag-日本近代文学 { background: #fde8e8; color: #8a1a1a; }
+  .tag-日本近代思想評論 { background: #f0e8fd; color: #4a1a8a; }
+
+  /* ページネーション */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+
+  .page-btn:hover { background: var(--border); }
+  .page-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .page-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .page-info { font-size: 0.85rem; color: var(--ink-light); }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--ink-light);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+    margin-top: 2rem;
+  }
+
+  #loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--ink-light);
+    font-size: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 名作文学館</h1>
+  <p>7,593作品 収録 ／ カテゴリー・著者・作品名で検索</p>
+</header>
+
+<div class="container">
+
+  <div class="search-area">
+    <div class="search-row">
+      <input class="search-input" id="titleSearch" type="text" placeholder="📖 作品名で検索..." oninput="doSearch()">
+      <input class="search-input" id="authorSearch" type="text" placeholder="✍️ 著者名で検索..." oninput="doSearch()">
+    </div>
+    <div class="category-row">
+      <button class="cat-btn active" onclick="setCategory('')" id="cat-all">すべて</button>
+      <button class="cat-btn" onclick="setCategory('外国文学')" id="cat-外国文学">外国文学</button>
+      <button class="cat-btn" onclick="setCategory('外国思想・社会科学')" id="cat-外国思想・社会科学">外国思想・社会科学</button>
+      <button class="cat-btn" onclick="setCategory('日本古典')" id="cat-日本古典">日本古典</button>
+      <button class="cat-btn" onclick="setCategory('日本近代文学')" id="cat-日本近代文学">日本近代文学</button>
+      <button class="cat-btn" onclick="setCategory('日本近代思想・評論')" id="cat-日本近代思想・評論">日本近代思想・評論</button>
+    </div>
+  </div>
+
+  <div id="loading">データを読み込み中...</div>
+  <div id="main" style="display:none">
+    <div class="result-count" id="resultCount"></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:45%">作品名</th>
+            <th style="width:30%">著者</th>
+            <th style="width:25%">カテゴリー</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+</div>
+
+<footer>名作文学館 ／ 収録作品数 7,593</footer>
+
+<script>
+let allWorks = [];
+let filtered = [];
+let currentPage = 1;
+const PER_PAGE = 50;
+let currentCategory = '';
+
+function tagClass(cat) {
+  return 'tag-' + cat.replace(/[・]/g, '').replace(/　/g, '');
+}
+
+function renderTable() {
+  const tbody = document.getElementById('tbody');
+  const start = (currentPage - 1) * PER_PAGE;
+  const end = start + PER_PAGE;
+  const page = filtered.slice(start, end);
+
+  tbody.innerHTML = page.map(w => `
+    <tr>
+      <td class="td-title">${escHtml(w.t)}</td>
+      <td class="td-author">${escHtml(w.a)}</td>
+      <td><span class="cat-tag ${tagClass(w.c)}">${escHtml(w.c)}</span></td>
+    </tr>
+  `).join('');
+
+  document.getElementById('resultCount').textContent =
+    `${filtered.length.toLocaleString()} 件 （${start+1}〜${Math.min(end, filtered.length)} 件表示）`;
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const total = Math.ceil(filtered.length / PER_PAGE);
+  const pg = document.getElementById('pagination');
+  if (total <= 1) { pg.innerHTML = ''; return; }
+
+  let html = '';
+  html += `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>◀ 前へ</button>`;
+
+  const range = [];
+  range.push(1);
+  for (let i = Math.max(2, currentPage-2); i <= Math.min(total-1, currentPage+2); i++) range.push(i);
+  if (total > 1) range.push(total);
+
+  let prev = 0;
+  for (const p of [...new Set(range)]) {
+    if (p - prev > 1) html += `<span class="page-info">...</span>`;
+    html += `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+    prev = p;
+  }
+
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>次へ ▶</button>`;
+  html += `<span class="page-info">${currentPage} / ${total} ページ</span>`;
+  pg.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filtered.length / PER_PAGE);
+  if (p < 1 || p > total) return;
+  currentPage = p;
+  renderTable();
+  window.scrollTo(0, 0);
+}
+
+function doSearch() {
+  const title = document.getElementById('titleSearch').value.trim();
+  const author = document.getElementById('authorSearch').value.trim();
+  filtered = allWorks.filter(w => {
+    const matchCat = currentCategory === '' || w.c === currentCategory;
+    const matchTitle = title === '' || w.t.includes(title);
+    const matchAuthor = author === '' || w.a.includes(author);
+    return matchCat && matchTitle && matchAuthor;
+  });
+  currentPage = 1;
+  renderTable();
+}
+
+function setCategory(cat) {
+  currentCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  const id = cat === '' ? 'cat-all' : 'cat-' + cat;
+  const btn = document.getElementById(id);
+  if (btn) btn.classList.add('active');
+  doSearch();
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// データ読み込み
+fetch('works.json')
+  .then(r => r.json())
+  .then(data => {
+    allWorks = data;
+    filtered = allWorks;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    renderTable();
+  })
+  .catch(() => {
+    document.getElementById('loading').textContent = 'データの読み込みに失敗しました。';
+  });
+</script>
+</body>
+</html>
